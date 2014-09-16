@@ -8,8 +8,10 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <unordered_map>
 #include <tchar.h>
 
 #include "targetver.h"
 #include "parameters.h"
 #include "opencv2/opencv.hpp"
+#include "fidtrackX.h"

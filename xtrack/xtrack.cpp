@@ -1,7 +1,6 @@
 // xtrack.cpp : Defines the entry point for the console application.
 
 #include <csignal>
-#include <unordered_map>
 #include "stdafx.h"
 
 
@@ -38,19 +37,6 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	return 0;
-}
-
-int intParam(std::unordered_map<std::string, std::string> parameters,
-		std::string key, int defaultValue) {
-	int result = defaultValue;
-	if (parameters.find(key) != parameters.end()) {
-		std::stringstream convert(parameters[key]);
-		if (!(convert >> result)) {
-			std::cerr << "Invalid value set for parameter " << key << "\n";
-			throw 1;
-		}
-	}
-	return result;
 }
 
 using namespace cv;
