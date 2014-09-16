@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5880654B-B3CE-48B1-A5D4-50A8CE7F9E9A}</ProjectGuid>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <Keyword>ManagedCProj</Keyword>
+    <RootNamespace>wosclib</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CLRSupport>true</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CLRSupport>false</CLRSupport>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level1</WarningLevel>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lgpl.txt" />
+    <None Include="README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WOscBlob.cpp" />
+    <ClCompile Include="WOscBundle.cpp" />
+    <ClCompile Include="WOscContainer.cpp" />
+    <ClCompile Include="WOscException.cpp" />
+    <ClCompile Include="WOscInfo.cpp" />
+    <ClCompile Include="WOscLib.cpp" />
+    <ClCompile Include="WOscMessage.cpp" />
+    <ClCompile Include="WOscMethod.cpp" />
+    <ClCompile Include="WOscNetReturn.cpp" />
+    <ClCompile Include="WOscPacket.cpp" />
+    <ClCompile Include="WOscPatternMatch.cpp" />
+    <ClCompile Include="WOscPriorityQueue.cpp" />
+    <ClCompile Include="WOscReceiver.cpp" />
+    <ClCompile Include="WOscReceiverMethod.cpp" />
+    <ClCompile Include="WOscString.cpp" />
+    <ClCompile Include="WOscTcpClient.cpp" />
+    <ClCompile Include="WOscTcpHandler.cpp" />
+    <ClCompile Include="WOscTcpServer.cpp" />
+    <ClCompile Include="WOscTimeTag.cpp" />
+    <ClCompile Include="WOscUtil.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WOscBlob.h" />
+    <ClInclude Include="WOscBundle.h" />
+    <ClInclude Include="WOscConfig.h" />
+    <ClInclude Include="WOscContainer.h" />
+    <ClInclude Include="WOscException.h" />
+    <ClInclude Include="WOscInfo.h" />
+    <ClInclude Include="WOscLib.h" />
+    <ClInclude Include="WOscMessage.h" />
+    <ClInclude Include="WOscMethod.h" />
+    <ClInclude Include="WOscNetReturn.h" />
+    <ClInclude Include="WOscPacket.h" />
+    <ClInclude Include="WOscPatternMatch.h" />
+    <ClInclude Include="WOscPriorityQueue.h" />
+    <ClInclude Include="WOscReceiver.h" />
+    <ClInclude Include="WOscReceiverMethod.h" />
+    <ClInclude Include="WOscString.h" />
+    <ClInclude Include="WOscTcpClient.h" />
+    <ClInclude Include="WOscTcpHandler.h" />
+    <ClInclude Include="WOscTcpServer.h" />
+    <ClInclude Include="WOscTimeTag.h" />
+    <ClInclude Include="WOscUtil.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

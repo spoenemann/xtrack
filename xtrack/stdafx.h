@@ -5,9 +5,11 @@
 
 #pragma once
 
-#include "targetver.h"
-
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <tchar.h>
+
+#include "targetver.h"
+#include "parameters.h"
+#include "opencv2/opencv.hpp"

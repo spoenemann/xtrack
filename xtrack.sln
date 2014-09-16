@@ -2,6 +2,13 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C++ Express 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xtrack", "xtrack\xtrack.vcxproj", "{6B87A5DA-8282-4634-9FFE-D06C1B5DA052}"
+	ProjectSection(ProjectDependencies) = postProject
+		{96404996-F739-43E0-AFCD-43D673820C6F} = {96404996-F739-43E0-AFCD-43D673820C6F}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libfidtrack", "libfidtrack\libfidtrack.vcxproj", "{96404996-F739-43E0-AFCD-43D673820C6F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "wosclib", "wosclib\wosclib.vcxproj", "{5880654B-B3CE-48B1-A5D4-50A8CE7F9E9A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +20,14 @@ Global
 		{6B87A5DA-8282-4634-9FFE-D06C1B5DA052}.Debug|Win32.Build.0 = Debug|Win32
 		{6B87A5DA-8282-4634-9FFE-D06C1B5DA052}.Release|Win32.ActiveCfg = Release|Win32
 		{6B87A5DA-8282-4634-9FFE-D06C1B5DA052}.Release|Win32.Build.0 = Release|Win32
+		{96404996-F739-43E0-AFCD-43D673820C6F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{96404996-F739-43E0-AFCD-43D673820C6F}.Debug|Win32.Build.0 = Debug|Win32
+		{96404996-F739-43E0-AFCD-43D673820C6F}.Release|Win32.ActiveCfg = Release|Win32
+		{96404996-F739-43E0-AFCD-43D673820C6F}.Release|Win32.Build.0 = Release|Win32
+		{5880654B-B3CE-48B1-A5D4-50A8CE7F9E9A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5880654B-B3CE-48B1-A5D4-50A8CE7F9E9A}.Debug|Win32.Build.0 = Debug|Win32
+		{5880654B-B3CE-48B1-A5D4-50A8CE7F9E9A}.Release|Win32.ActiveCfg = Release|Win32
+		{5880654B-B3CE-48B1-A5D4-50A8CE7F9E9A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
