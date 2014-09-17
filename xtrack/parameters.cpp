@@ -23,3 +23,12 @@ std::string stringParam(std::unordered_map<std::string, std::string> parameters,
 	}
 	return result;
 }
+
+bool boolParam(std::unordered_map<std::string, std::string> parameters,
+		std::string key, bool defaultValue) {
+	bool result = defaultValue;
+	if (parameters.find(key) != parameters.end()) {
+		result = (parameters[key] == "true");
+	}
+	return result;
+}

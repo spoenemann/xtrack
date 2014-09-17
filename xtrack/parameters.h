@@ -4,6 +4,12 @@
 
 #include "stdafx.h"
 
+#define DEFAULT_WINDOW false
+#define PARAM_WINDOW "window"
+
+#define DEFAULT_PRINT false
+#define PARAM_PRINT "print"
+
 #define DEFAULT_CAMERA 0
 #define PARAM_CAMERA "camera"
 
@@ -30,3 +36,6 @@ int intParam(std::unordered_map<std::string, std::string> parameters,
 
 std::string stringParam(std::unordered_map<std::string, std::string> parameters,
 		std::string key, std::string defaultValue);
+
+bool boolParam(std::unordered_map<std::string, std::string> parameters,
+		std::string key, bool defaultValue);

@@ -14,7 +14,7 @@ public:
 	FiducialFinder(int width, int height);
 	~FiducialFinder();
 
-	void findFiducials(cv::Mat*);
+	int findFiducials(cv::Mat*);
 
 private:
 	Segmenter segmenter;

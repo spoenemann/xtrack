@@ -12,5 +12,8 @@ public:
 	void sendMessage(FiducialX fiducials[], int numFiducials, int width, int height);
 
 private:
+	std::string ipaddr;
+	unsigned short port;
 	int fseq;
+	int sock;
 };

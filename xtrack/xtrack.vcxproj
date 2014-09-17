@@ -68,15 +68,18 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\libfidtrack;C:\Users\xtextcon\xrobot\opencv\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\libfidtrack;..\wosclib;C:\Users\xtextcon\xrobot\opencv\build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\libfidtrack\Release;C:\Users\xtextcon\xrobot\opencv\build\x86\vc10\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_core249.lib;opencv_highgui249.lib;opencv_imgproc249.lib;libfidtrack.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\xtextcon\xrobot\opencv\build\x86\vc10\staticlib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core249.lib;opencv_highgui249.lib;opencv_imgproc249.lib;libtiff.lib;libpng.lib;libjpeg.lib;libjasper.lib;IlmImf.lib;zlib.lib;Vfw32.Lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -84,11 +87,21 @@
     <ClInclude Include="parameters.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="tuio.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fiducials.cpp" />
-    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="parameters.cpp" />
+    <ClCompile Include="tuio.cpp" />
     <ClCompile Include="xtrack.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\libfidtrack\libfidtrack.vcxproj">
+      <Project>{96404996-f739-43e0-afcd-43d673820c6f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\wosclib\wosclib.vcxproj">
+      <Project>{5880654b-b3ce-48b1-a5d4-50a8ce7f9e9a}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

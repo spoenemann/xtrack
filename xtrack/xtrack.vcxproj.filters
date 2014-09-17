@@ -27,15 +27,21 @@
     <ClInclude Include="fiducials.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tuio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="xtrack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="fiducials.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tuio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="parameters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -21,10 +21,8 @@ FiducialFinder::~FiducialFinder() {
 	delete dmap;
 }
 
-void FiducialFinder::findFiducials(cv::Mat *frame) {
-	int fid_count, valid_fiducials = 0;
-
+int FiducialFinder::findFiducials(cv::Mat *frame) {
 	step_segmenter(&segmenter, frame->data);
-	fid_count = find_fiducialsX(fiducials, MAX_FIDUCIALS,
+	return find_fiducialsX(fiducials, MAX_FIDUCIALS,
 			&fidtrackerx, &segmenter, frame->cols, frame->rows);
 }
