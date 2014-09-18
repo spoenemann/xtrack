@@ -14,14 +14,16 @@
 
 class TuioServer {
 public:
-	TuioServer(std::unordered_map<std::string, std::string> parameters);
+	TuioServer(std::unordered_map<std::string, std::string> &parameters, int fwidth, int fheight);
 	~TuioServer();
 
-	void sendMessage(FiducialX fiducials[], int numFiducials, int width, int height);
+	void sendMessage(FiducialX fiducials[], int numFiducials);
 
 private:
 	std::string ipaddr;
 	unsigned short port;
 	int fseq;
 	int sock;
+	int fwidth;
+	int fheight;
 };

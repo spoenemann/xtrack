@@ -39,11 +39,11 @@
 #define DEFAULT_PORT 3333
 #define PARAM_PORT "port"
 
-int intParam(std::unordered_map<std::string, std::string> parameters,
-		std::string key, int defaultValue);
+int intParam(std::unordered_map<std::string, std::string> &parameters,
+		const std::string &key, const int defaultValue);
 
-std::string stringParam(std::unordered_map<std::string, std::string> parameters,
-		std::string key, std::string defaultValue);
+std::string stringParam(std::unordered_map<std::string, std::string> &parameters,
+		const std::string &key, const std::string &defaultValue);
 
-bool boolParam(std::unordered_map<std::string, std::string> parameters,
-		std::string key, bool defaultValue);
+bool boolParam(std::unordered_map<std::string, std::string> &parameters,
+		const std::string &key, const bool defaultValue);

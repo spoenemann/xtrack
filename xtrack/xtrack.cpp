@@ -21,7 +21,7 @@ static void signal_term(int signal) {
 	term_requested = true;
 }
 
-void process(std::unordered_map<std::string, std::string> parameters);
+void process(std::unordered_map<std::string, std::string> &parameters);
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -58,8 +58,8 @@ void printFiducials(FiducialX fiducials[], int numFiducials) {
 			if (printedFids > 0) {
 				std::cout << "  |  ";
 			}
-			std::cout << "id " << fidx->id << " (" << fidx->x << ", " << fidx->y
-				<< " / " << (fidx->angle / (2 * PI) * 360) << ")";
+			std::cout << "id " << fidx->id << " (" << (int) fidx->x << ", " << (int) fidx->y
+				<< " / " << (int) (fidx->angle / (2 * PI) * 360) << ")";
 			printedFids++;
 		}
 	}
@@ -70,7 +70,7 @@ void printFiducials(FiducialX fiducials[], int numFiducials) {
 
 using namespace cv;
 
-void process(std::unordered_map<std::string, std::string> parameters) {
+void process(std::unordered_map<std::string, std::string> &parameters) {
 	// Create the camera capture
 	VideoCapture capture(intParam(parameters, PARAM_CAMERA, DEFAULT_CAMERA));
 	if (!capture.isOpened()) {
@@ -87,10 +87,12 @@ void process(std::unordered_map<std::string, std::string> parameters) {
 	if (showWindow) {
 		namedWindow("camera", 1);
 	}
-	Mat grayScaleMat, thresholdMat;
-	FiducialFinder fiducialFinder((int) capture.get(CV_CAP_PROP_FRAME_WIDTH),
-		(int) capture.get(CV_CAP_PROP_FRAME_HEIGHT));
-	TuioServer tuioServer(parameters);
+	int frameWidth = (int) capture.get(CV_CAP_PROP_FRAME_WIDTH);
+	int frameHeight = (int) capture.get(CV_CAP_PROP_FRAME_HEIGHT);
+	Mat grayScaleMat;
+	Mat thresholdMat;
+	FiducialFinder fiducialFinder(frameWidth, frameHeight);
+	TuioServer tuioServer(parameters, frameWidth, frameHeight);
 
 	do {
 
@@ -110,10 +112,10 @@ void process(std::unordered_map<std::string, std::string> parameters) {
 		}
 
 		// Find fiducials
-		int fidCount = fiducialFinder.findFiducials(&thresholdMat);
+		int fidCount = fiducialFinder.findFiducials(thresholdMat);
 
 		// Send TUIO message
-		tuioServer.sendMessage(fiducialFinder.fiducials, fidCount, thresholdMat.cols, thresholdMat.rows);
+		tuioServer.sendMessage(fiducialFinder.fiducials, fidCount);
 
 		// Print fiducial data
 		if (printData) {

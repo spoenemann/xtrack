@@ -10,8 +10,8 @@
 
 #include "parameters.h"
 
-int intParam(std::unordered_map<std::string, std::string> parameters,
-		std::string key, int defaultValue) {
+int intParam(std::unordered_map<std::string, std::string> &parameters,
+		const std::string &key, const int defaultValue) {
 	int result = defaultValue;
 	if (parameters.find(key) != parameters.end()) {
 		std::stringstream convert(parameters[key]);
@@ -23,8 +23,8 @@ int intParam(std::unordered_map<std::string, std::string> parameters,
 	return result;
 }
 
-std::string stringParam(std::unordered_map<std::string, std::string> parameters,
-		std::string key, std::string defaultValue) {
+std::string stringParam(std::unordered_map<std::string, std::string> &parameters,
+		const std::string &key, const std::string &defaultValue) {
 	std::string result = defaultValue;
 	if (parameters.find(key) != parameters.end()) {
 		result = parameters[key];
@@ -32,8 +32,8 @@ std::string stringParam(std::unordered_map<std::string, std::string> parameters,
 	return result;
 }
 
-bool boolParam(std::unordered_map<std::string, std::string> parameters,
-		std::string key, bool defaultValue) {
+bool boolParam(std::unordered_map<std::string, std::string> &parameters,
+		const std::string &key, const bool defaultValue) {
 	bool result = defaultValue;
 	if (parameters.find(key) != parameters.end()) {
 		result = (parameters[key] == "true");

@@ -22,7 +22,7 @@ public:
 	FiducialFinder(int width, int height);
 	~FiducialFinder();
 
-	int findFiducials(cv::Mat*);
+	int findFiducials(cv::InputArray);
 
 private:
 	Segmenter segmenter;

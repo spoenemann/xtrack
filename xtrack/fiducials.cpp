@@ -29,8 +29,9 @@ FiducialFinder::~FiducialFinder() {
 	delete dmap;
 }
 
-int FiducialFinder::findFiducials(cv::Mat *frame) {
-	step_segmenter(&segmenter, frame->data);
+int FiducialFinder::findFiducials(cv::InputArray input) {
+	cv::Mat frame = input.getMat();
+	step_segmenter(&segmenter, frame.data);
 	return find_fiducialsX(fiducials, MAX_FIDUCIALS,
-			&fidtrackerx, &segmenter, frame->cols, frame->rows);
+			&fidtrackerx, &segmenter, frame.cols, frame.rows);
 }
