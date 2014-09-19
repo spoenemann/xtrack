@@ -9,11 +9,14 @@
 // xtrack.cpp : Defines the entry point for the console application.
 
 #include <csignal>
+#include <ctime>
+
 #include "stdafx.h"
 #include "fiducials.h"
 #include "tuio.h"
 
 const float PI = 3.14159265358979f;
+const float CLOCK_FACTOR = CLOCKS_PER_SEC / 1000.0f;
 
 static bool term_requested = false;
 
@@ -93,12 +96,18 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 	Mat thresholdMat;
 	FiducialFinder fiducialFinder(frameWidth, frameHeight);
 	TuioServer tuioServer(parameters, frameWidth, frameHeight);
+	int waitTime;
 
 	do {
+		float frameStartClock = clock() * CLOCK_FACTOR;
 
 		// Capture a frame
 		Mat frameMat;
         capture >> frameMat;
+		if (frameMat.cols == 0 || frameMat.rows == 0) {
+			std::cout << "No image from camera.\n";
+			break;
+		}
 
 		// Convert to grayscale
 		if (frameMat.channels() == 3) {
@@ -126,5 +135,11 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 			printFiducials(fiducialFinder.fiducials, fidCount);
 		}
 
-	} while (!term_requested && waitKey(frameTime) < 0);
+		float frameEndClock = clock() * CLOCK_FACTOR;
+		waitTime = frameTime - (int) (frameEndClock - frameStartClock);
+		// Caution: waitTime <= 0 means to wait forever
+		if (waitTime <= 0) {
+			waitTime = 1;
+		}
+	} while (!term_requested && waitKey(waitTime) < 0);
 }
