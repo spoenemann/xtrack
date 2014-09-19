@@ -101,7 +101,11 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
         capture >> frameMat;
 
 		// Convert to grayscale
-        cvtColor(frameMat, grayScaleMat, CV_BGR2GRAY);
+		if (frameMat.channels() == 3) {
+			cvtColor(frameMat, grayScaleMat, CV_BGR2GRAY);
+		} else {
+			grayScaleMat = frameMat;
+		}
 
 		// Apply a threshold
 		threshold(grayScaleMat, thresholdMat, thresholdVal, 255, THRESH_BINARY);

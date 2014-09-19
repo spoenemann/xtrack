@@ -63,17 +63,16 @@ void TuioServer::sendMessage(FiducialX fiducials[], int numFiducials) {
 		FiducialX &fidx = fiducials[i];
 		WOscMessage *setMsg = new WOscMessage(OSC_PATH);
 		setMsg->Add("set");
-		// /tuio/2Dobj set s i x y a X Y A m r
-		setMsg->Add(fidx.id); // blob id
+		setMsg->Add(fidx.id); // session id
 		setMsg->Add(fidx.id); // fiducial id
-		setMsg->Add(fidx.x / fwidth); // x
-		setMsg->Add(fidx.y / fheight); // y
-		setMsg->Add(fidx.angle); // a
-		setMsg->Add(0.0f); // X
-		setMsg->Add(0.0f); // Y
-		setMsg->Add(0.0f); // A
-		setMsg->Add(0.0f); // m
-		setMsg->Add(0.0f); // r
+		setMsg->Add(fidx.x / fwidth); // horizontal position
+		setMsg->Add(fidx.y / fheight); // vertical position
+		setMsg->Add(fidx.angle); // angle
+		setMsg->Add(0.0f); // horizontal motion speed
+		setMsg->Add(0.0f); // vertical motion speed
+		setMsg->Add(0.0f); // rotation speed
+		setMsg->Add(0.0f); // motion acceleration
+		setMsg->Add(0.0f); // rotation acceleration
 		bundle.Add(setMsg);
 	}
 
