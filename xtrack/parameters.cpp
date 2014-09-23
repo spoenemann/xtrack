@@ -40,3 +40,16 @@ bool boolParam(std::unordered_map<std::string, std::string> &parameters,
 	}
 	return result;
 }
+
+double doubleParam(std::unordered_map<std::string, std::string> &parameters,
+		const std::string &key, const double defaultValue) {
+	double result = defaultValue;
+	if (parameters.find(key) != parameters.end()) {
+		std::stringstream convert(parameters[key]);
+		if (!(convert >> result)) {
+			std::cerr << "Invalid value set for parameter " << key << "\n";
+			throw 1;
+		}
+	}
+	return result;
+}

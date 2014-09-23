@@ -22,3 +22,5 @@
 #include "parameters.h"
 #include "opencv2/opencv.hpp"
 #include "fidtrackX.h"
+
+const float PI = 3.14159265358979f;

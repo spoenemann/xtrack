@@ -12,8 +12,11 @@
 
 #include "stdafx.h"
 
-#define DEFAULT_WINDOW false
-#define PARAM_WINDOW "window"
+#define DEFAULT_SHOW_CONTRAST false
+#define PARAM_SHOW_CONTRAST "showcontr"
+
+#define DEFAULT_SHOW_INPUT false
+#define PARAM_SHOW_INPUT "showinput"
 
 #define DEFAULT_PRINT false
 #define PARAM_PRINT "print"
@@ -39,6 +42,12 @@
 #define DEFAULT_PORT 3333
 #define PARAM_PORT "port"
 
+#define DEFAULT_TRACK_RECT_SIZE 40
+#define PARAM_TRACK_RECT_SIZE "trackrectsize"
+
+#define DEFAULT_TRACK_NAMES ""
+#define PARAM_TRACK_NAMES "tracknames"
+
 int intParam(std::unordered_map<std::string, std::string> &parameters,
 		const std::string &key, const int defaultValue);
 
@@ -47,3 +56,6 @@ std::string stringParam(std::unordered_map<std::string, std::string> &parameters
 
 bool boolParam(std::unordered_map<std::string, std::string> &parameters,
 		const std::string &key, const bool defaultValue);
+
+double doubleParam(std::unordered_map<std::string, std::string> &parameters,
+		const std::string &key, const double defaultValue);

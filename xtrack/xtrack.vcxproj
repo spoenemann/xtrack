@@ -83,6 +83,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="display.h" />
     <ClInclude Include="fiducials.h" />
     <ClInclude Include="parameters.h" />
     <ClInclude Include="stdafx.h" />
@@ -90,6 +91,7 @@
     <ClInclude Include="tuio.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="display.cpp" />
     <ClCompile Include="fiducials.cpp" />
     <ClCompile Include="parameters.cpp" />
     <ClCompile Include="tuio.cpp" />

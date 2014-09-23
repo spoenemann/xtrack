@@ -10,12 +10,13 @@
 
 #include <csignal>
 #include <ctime>
+#include <cmath>
 
 #include "stdafx.h"
 #include "fiducials.h"
 #include "tuio.h"
+#include "display.h"
 
-const float PI = 3.14159265358979f;
 const float CLOCK_FACTOR = CLOCKS_PER_SEC / 1000.0f;
 
 static bool term_requested = false;
@@ -56,13 +57,13 @@ int _tmain(int argc, _TCHAR* argv[])
 void printFiducials(FiducialX fiducials[], int numFiducials) {
 	int printedFids = 0;
 	for (int i = 0; i < numFiducials; i++) {
-		FiducialX *fidx = &fiducials[i];
-		if (fidx->id >= 0) {
+		FiducialX &fidx = fiducials[i];
+		if (fidx.id >= 0) {
 			if (printedFids > 0) {
 				std::cout << "  |  ";
 			}
-			std::cout << "id " << fidx->id << " (" << (int) fidx->x << ", " << (int) fidx->y
-				<< " / " << (int) (fidx->angle / (2 * PI) * 360) << ")";
+			std::cout << "id " << fidx.id << " (" << (int) fidx.x << ", " << (int) fidx.y
+				<< " / " << (int) (fidx.angle / (2 * PI) * 360) << ")";
 			printedFids++;
 		}
 	}
@@ -85,10 +86,16 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 
 	int frameTime = intParam(parameters, PARAM_FRAME_TIME, DEFAULT_FRAME_TIME);
 	int thresholdVal = intParam(parameters, PARAM_THRESHOLD, DEFAULT_THRESHOLD);
-	bool showWindow = boolParam(parameters, PARAM_WINDOW, DEFAULT_WINDOW);
+	bool showInputWindow = boolParam(parameters, PARAM_SHOW_INPUT, DEFAULT_SHOW_INPUT);
+	bool showContrastWindow = boolParam(parameters, PARAM_SHOW_CONTRAST, DEFAULT_SHOW_CONTRAST);
 	bool printData = boolParam(parameters, PARAM_PRINT, DEFAULT_PRINT);
-	if (showWindow) {
-		namedWindow("camera", 1);
+	
+	CameraDisplay *cameraDisplay = NULL;
+	if (showInputWindow) {
+		cameraDisplay = new CameraDisplay(parameters);
+	}
+	if (showContrastWindow) {
+		namedWindow("contrast", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL);
 	}
 	int frameWidth = (int) capture.get(CV_CAP_PROP_FRAME_WIDTH);
 	int frameHeight = (int) capture.get(CV_CAP_PROP_FRAME_HEIGHT);
@@ -119,9 +126,9 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 		// Apply a threshold
 		threshold(grayScaleMat, thresholdMat, thresholdVal, 255, THRESH_BINARY);
 
-		// Display in the window
-        if (showWindow) {
-			imshow("camera", thresholdMat);
+		// Display the contrast image in a window
+        if (showContrastWindow) {
+			imshow("contrast", thresholdMat);
 		}
 
 		// Find fiducials
@@ -135,11 +142,20 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 			printFiducials(fiducialFinder.fiducials, fidCount);
 		}
 
+		// Display the input image in a window
+		if (cameraDisplay != NULL) {
+			cameraDisplay->displayTrackedInput(frameMat, fiducialFinder.fiducials, fidCount);
+		}
+
 		float frameEndClock = clock() * CLOCK_FACTOR;
-		waitTime = frameTime - (int) (frameEndClock - frameStartClock);
+		waitTime = frameTime - (int) (frameEndClock - frameStartClock + 0.5f);
 		// Caution: waitTime <= 0 means to wait forever
 		if (waitTime <= 0) {
 			waitTime = 1;
 		}
 	} while (!term_requested && waitKey(waitTime) < 0);
+
+	if (cameraDisplay != NULL) {
+		delete cameraDisplay;
+	}
 }
