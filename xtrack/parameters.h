@@ -33,6 +33,9 @@
 #define DEFAULT_FRAME_HEIGHT 240
 #define PARAM_FRAME_HEIGHT "fheight"
 
+#define DEFAULT_QUADRATIC false
+#define PARAM_QUADRATIC "quadratic"
+
 #define DEFAULT_THRESHOLD 128
 #define PARAM_THRESHOLD "threshold"
 

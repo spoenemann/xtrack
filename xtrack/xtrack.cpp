@@ -74,6 +74,22 @@ void printFiducials(FiducialX fiducials[], int numFiducials) {
 
 using namespace cv;
 
+void displayContrastImage(InputArray input) {
+	Mat frameMat = input.getMat();
+	int centerx = frameMat.cols / 2;
+	int centery = frameMat.rows / 2;
+	const Scalar color(160);
+
+	// Draw the center position
+	line(frameMat, Point(centerx - 20, centery), Point(centerx + 20, centery), color, 2);
+	line(frameMat, Point(centerx, centery - 20), Point(centerx, centery + 20), color, 2);
+
+	// Draw the arena
+	circle(frameMat, Point(centerx, centery), 500, color, 2, CV_AA);
+
+	imshow("contrast", frameMat);
+}
+
 void process(std::unordered_map<std::string, std::string> &parameters) {
 	// Create the camera capture
 	VideoCapture capture(intParam(parameters, PARAM_CAMERA, DEFAULT_CAMERA));
@@ -86,6 +102,7 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 
 	int frameTime = intParam(parameters, PARAM_FRAME_TIME, DEFAULT_FRAME_TIME);
 	int thresholdVal = intParam(parameters, PARAM_THRESHOLD, DEFAULT_THRESHOLD);
+	bool makeQuadratic = boolParam(parameters, PARAM_QUADRATIC, DEFAULT_QUADRATIC);
 	bool showInputWindow = boolParam(parameters, PARAM_SHOW_INPUT, DEFAULT_SHOW_INPUT);
 	bool showContrastWindow = boolParam(parameters, PARAM_SHOW_CONTRAST, DEFAULT_SHOW_CONTRAST);
 	bool printData = boolParam(parameters, PARAM_PRINT, DEFAULT_PRINT);
@@ -95,14 +112,14 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 		cameraDisplay = new CameraDisplay(parameters);
 	}
 	if (showContrastWindow) {
-		namedWindow("contrast", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_NORMAL);
+		namedWindow("contrast", CV_WINDOW_AUTOSIZE | CV_WINDOW_KEEPRATIO | CV_GUI_EXPANDED);
 	}
-	int frameWidth = (int) capture.get(CV_CAP_PROP_FRAME_WIDTH);
 	int frameHeight = (int) capture.get(CV_CAP_PROP_FRAME_HEIGHT);
-	Mat grayScaleMat;
-	Mat thresholdMat;
+	int frameWidth = makeQuadratic ? frameHeight : (int) capture.get(CV_CAP_PROP_FRAME_WIDTH);
 	FiducialFinder fiducialFinder(frameWidth, frameHeight);
 	TuioServer tuioServer(parameters, frameWidth, frameHeight);
+
+	Mat grayScaleMat, thresholdMat;
 	int waitTime;
 
 	do {
@@ -116,26 +133,31 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 			break;
 		}
 
+		// Cut the frame to make it quadratic
+		Mat quadrMat(frameMat, makeQuadratic
+			? Rect((frameMat.cols - frameMat.rows) / 2, 0, frameMat.rows, frameMat.rows)
+			: Rect(0, 0, frameMat.cols, frameMat.rows));
+
 		// Convert to grayscale
-		if (frameMat.channels() == 3) {
-			cvtColor(frameMat, grayScaleMat, CV_BGR2GRAY);
+		if (quadrMat.channels() == 3) {
+			cvtColor(quadrMat, grayScaleMat, CV_BGR2GRAY);
 		} else {
-			grayScaleMat = frameMat;
+			grayScaleMat = quadrMat;
 		}
 
 		// Apply a threshold
 		threshold(grayScaleMat, thresholdMat, thresholdVal, 255, THRESH_BINARY);
-
-		// Display the contrast image in a window
-        if (showContrastWindow) {
-			imshow("contrast", thresholdMat);
-		}
 
 		// Find fiducials
 		int fidCount = fiducialFinder.findFiducials(thresholdMat);
 
 		// Send TUIO message
 		tuioServer.sendMessage(fiducialFinder.fiducials, fidCount);
+
+		// Display the contrast image in a window
+        if (showContrastWindow) {
+			displayContrastImage(thresholdMat);
+		}
 
 		// Print fiducial data
 		if (printData) {

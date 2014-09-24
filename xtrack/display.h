@@ -20,7 +20,8 @@ public:
 
 private:
 	int trackRectSize;
+	bool quadraticTracking;
 	std::vector<std::string> trackNames;
-	std::vector<cv::Scalar> colors;
+	std::vector<cv::Scalar> trackColors;
 	cv::Scalar fontColor;
 };
