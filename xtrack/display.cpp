@@ -79,10 +79,10 @@ void CameraDisplay::displayTrackedInput(InputArray input, FiducialX fiducials[],
 			if (!trackNames.empty()) {
 				std::string name = trackNames.at(fidx.id % trackNames.size());
 				int baseLine;
-				Size &textSize = getTextSize(name, FONT_HERSHEY_PLAIN, 2.0, 2, &baseLine);
+				Size &textSize = getTextSize(name, FONT_HERSHEY_SIMPLEX, 0.8, 2, &baseLine);
 				Point textPos(offset.x + (int) fidx.x - textSize.width / 2,
 					offset.y + (int) fidx.y + textSize.height / 2);
-				putText(frameMat, name, textPos, FONT_HERSHEY_PLAIN, 2.0, fontColor, 2, CV_AA);
+				putText(frameMat, name, textPos, FONT_HERSHEY_SIMPLEX, 0.8, fontColor, 2, CV_AA);
 			}
 		}
 	}

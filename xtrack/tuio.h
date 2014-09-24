@@ -14,7 +14,7 @@
 
 class TuioServer {
 public:
-	TuioServer(std::unordered_map<std::string, std::string> &parameters, int fwidth, int fheight);
+	TuioServer(std::unordered_map<std::string, std::string> &parameters, cv::Size &fsize);
 	~TuioServer();
 
 	void sendMessage(FiducialX fiducials[], int numFiducials);
@@ -24,6 +24,5 @@ private:
 	unsigned short port;
 	int fseq;
 	int sock;
-	int fwidth;
-	int fheight;
+	cv::Size fsize;
 };

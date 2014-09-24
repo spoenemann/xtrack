@@ -87,6 +87,7 @@
     <ClInclude Include="display.h" />
     <ClInclude Include="fiducials.h" />
     <ClInclude Include="parameters.h" />
+    <ClInclude Include="record.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="tuio.h" />
@@ -95,6 +96,7 @@
     <ClCompile Include="display.cpp" />
     <ClCompile Include="fiducials.cpp" />
     <ClCompile Include="parameters.cpp" />
+    <ClCompile Include="record.cpp" />
     <ClCompile Include="tuio.cpp" />
     <ClCompile Include="xtrack.cpp" />
   </ItemGroup>

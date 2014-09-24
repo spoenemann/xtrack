@@ -33,6 +33,9 @@
     <ClInclude Include="display.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="record.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="xtrack.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="display.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="record.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

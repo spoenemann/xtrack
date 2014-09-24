@@ -19,7 +19,7 @@ class FiducialFinder {
 public:
 	FiducialX fiducials[MAX_FIDUCIALS];
 
-	FiducialFinder(int width, int height);
+	FiducialFinder(cv::Size &fsize);
 	~FiducialFinder();
 
 	int findFiducials(cv::InputArray);

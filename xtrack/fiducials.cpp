@@ -10,19 +10,19 @@
 
 #include "fiducials.h"
 
-FiducialFinder::FiducialFinder(int width, int height) {
+FiducialFinder::FiducialFinder(cv::Size &size) {
 	initialize_treeidmap(&treeidmap);
 
-	dmap = new ShortPoint[height * width];
-	for (int y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
-			dmap[y * width + x].x = x;
-			dmap[y * width + x].y = y;
+	dmap = new ShortPoint[size.height * size.width];
+	for (int y = 0; y < size.height; y++) {
+		for (int x = 0; x < size.width; x++) {
+			dmap[y * size.width + x].x = x;
+			dmap[y * size.width + x].y = y;
 		}
 	}
 
 	initialize_fidtrackerX(&fidtrackerx, &treeidmap, dmap);
-	initialize_segmenter(&segmenter, width, height, treeidmap.max_adjacencies);
+	initialize_segmenter(&segmenter, size.width, size.height, treeidmap.max_adjacencies);
 }
 
 FiducialFinder::~FiducialFinder() {

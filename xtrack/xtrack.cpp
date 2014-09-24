@@ -16,6 +16,7 @@
 #include "fiducials.h"
 #include "tuio.h"
 #include "display.h"
+#include "record.h"
 
 const float CLOCK_FACTOR = CLOCKS_PER_SEC / 1000.0f;
 
@@ -114,23 +115,34 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 	if (showContrastWindow) {
 		namedWindow("contrast", CV_WINDOW_AUTOSIZE | CV_WINDOW_KEEPRATIO | CV_GUI_EXPANDED);
 	}
-	int frameHeight = (int) capture.get(CV_CAP_PROP_FRAME_HEIGHT);
-	int frameWidth = makeQuadratic ? frameHeight : (int) capture.get(CV_CAP_PROP_FRAME_WIDTH);
-	FiducialFinder fiducialFinder(frameWidth, frameHeight);
-	TuioServer tuioServer(parameters, frameWidth, frameHeight);
+	Size actualFrameSize((int) capture.get(CV_CAP_PROP_FRAME_WIDTH),
+			(int) capture.get(CV_CAP_PROP_FRAME_HEIGHT));
+	Size trackedFrameSize(makeQuadratic ? actualFrameSize.height : actualFrameSize.width,
+			actualFrameSize.height);
+	FiducialFinder fiducialFinder(trackedFrameSize);
+	TuioServer tuioServer(parameters, trackedFrameSize);
+	CameraRecorder cameraRecorder(parameters, actualFrameSize);
+	RecordMode recordMode = NORMAL;
 
 	Mat grayScaleMat, thresholdMat;
-	int waitTime;
 
 	do {
 		float frameStartClock = clock() * CLOCK_FACTOR;
 
 		// Capture a frame
 		Mat frameMat;
-        capture >> frameMat;
-		if (frameMat.cols == 0 || frameMat.rows == 0) {
-			std::cout << "No image from camera.\n";
-			break;
+		if (recordMode == PLAYBACK) {
+			cameraRecorder.playbackFrame(frameMat);
+		} else {
+			capture >> frameMat;
+			if (frameMat.cols == 0 || frameMat.rows == 0) {
+				std::cout << "No image from camera.\n";
+				break;
+			}
+		}
+
+		if (recordMode == RECORDING) {
+			cameraRecorder.recordFrame(frameMat);
 		}
 
 		// Cut the frame to make it quadratic
@@ -170,12 +182,55 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 		}
 
 		float frameEndClock = clock() * CLOCK_FACTOR;
-		waitTime = frameTime - (int) (frameEndClock - frameStartClock + 0.5f);
+		int waitTime = frameTime - (int) (frameEndClock - frameStartClock + 0.5f);
 		// Caution: waitTime <= 0 means to wait forever
 		if (waitTime <= 0) {
 			waitTime = 1;
 		}
-	} while (!term_requested && waitKey(waitTime) < 0);
+
+		// Check user input to console
+		int key = waitKey(waitTime);
+		switch(key) {
+		case 27:
+		case 'q':
+			// Quit the application
+			term_requested = true;
+			break;
+		case 'r':
+			// Start recording
+			if (recordMode == NORMAL) {
+				if (cameraRecorder.startRecording()) {
+					recordMode = RECORDING;
+				}
+			}
+			break;
+		case 's':
+			// Stop recording or playback
+			switch (recordMode) {
+			case RECORDING:
+				cameraRecorder.stopRecording();
+				break;
+			case PLAYBACK:
+				cameraRecorder.stopPlayback();
+				break;
+			}
+			recordMode = NORMAL;
+			break;
+		case 'p':
+			// Play back the last recording
+			switch (recordMode) {
+			case RECORDING:
+				cameraRecorder.stopRecording();
+				// fall through
+			case NORMAL:
+				if (cameraRecorder.startPlayback()) {
+					recordMode = PLAYBACK;
+				}
+				break;
+			}
+			break;
+		}
+	} while (!term_requested);
 
 	if (cameraDisplay != NULL) {
 		delete cameraDisplay;

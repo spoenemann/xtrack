@@ -24,7 +24,7 @@
 #define DEFAULT_CAMERA 0
 #define PARAM_CAMERA "camera"
 
-#define DEFAULT_FRAME_TIME 30
+#define DEFAULT_FRAME_TIME 33
 #define PARAM_FRAME_TIME "ftime"
 
 #define DEFAULT_FRAME_WIDTH 320
@@ -50,6 +50,15 @@
 
 #define DEFAULT_TRACK_NAMES ""
 #define PARAM_TRACK_NAMES "tracknames"
+
+#define DEFAULT_RECORD_DIR ".\\"
+#define PARAM_RECORD_DIR "recorddir"
+
+#define DEFAULT_CODEC "PIM1"
+#define PARAM_CODEC "codec"
+
+#define DEFAULT_RECORD_SCALE 0.4
+#define PARAM_RECORD_SCALE "recordscale"
 
 int intParam(std::unordered_map<std::string, std::string> &parameters,
 		const std::string &key, const int defaultValue);

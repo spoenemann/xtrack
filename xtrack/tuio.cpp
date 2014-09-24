@@ -17,11 +17,10 @@
 #define OSC_PATH "/tuio/2Dobj"
 
 TuioServer::TuioServer(std::unordered_map<std::string, std::string> &parameters,
-		int fwidth, int fheight) {
+		cv::Size &fsize) {
 	this->ipaddr = stringParam(parameters, PARAM_ADDRESS, DEFAULT_ADDRESS);
 	this->port = intParam(parameters, PARAM_PORT, DEFAULT_PORT);
-	this->fwidth = fwidth;
-	this->fheight = fheight;
+	this->fsize = fsize;
 
 	WSADATA wsaData;
 	int startupResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -65,8 +64,8 @@ void TuioServer::sendMessage(FiducialX fiducials[], int numFiducials) {
 		setMsg->Add("set");
 		setMsg->Add(fidx.id); // session id
 		setMsg->Add(fidx.id); // fiducial id
-		setMsg->Add(fidx.x / fwidth); // horizontal position
-		setMsg->Add(fidx.y / fheight); // vertical position
+		setMsg->Add(fidx.x / fsize.width); // horizontal position
+		setMsg->Add(fidx.y / fsize.height); // vertical position
 		setMsg->Add(fidx.angle); // angle
 		setMsg->Add(0.0f); // horizontal motion speed
 		setMsg->Add(0.0f); // vertical motion speed
