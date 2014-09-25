@@ -12,11 +12,12 @@
 
 using namespace cv;
 
-CameraDisplay::CameraDisplay(std::unordered_map<std::string, std::string> &parameters) {
+CameraDisplay::CameraDisplay(std::unordered_map<std::string, std::string> &parameters, cv::Size &screenSize) {
 	namedWindow("input", CV_WINDOW_NORMAL | CV_WINDOW_KEEPRATIO | CV_GUI_EXPANDED);
 	cvSetWindowProperty("input", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 
 	this->trackRectSize = intParam(parameters, PARAM_TRACK_RECT_SIZE, DEFAULT_TRACK_RECT_SIZE);
+	this->screenSize = screenSize;
 
 	// Read names of tracked objects from parameters
 	std::string trackNamesString = stringParam(parameters, PARAM_TRACK_NAMES, DEFAULT_TRACK_NAMES);
@@ -35,17 +36,9 @@ CameraDisplay::CameraDisplay(std::unordered_map<std::string, std::string> &param
 	this->trackColors.push_back(Scalar(180, 40, 30));
 	this->trackColors.push_back(Scalar(30, 40, 180));
 	this->fontColor = Scalar(230, 230, 230);
-
-	this->quadraticTracking = boolParam(parameters, PARAM_QUADRATIC, DEFAULT_QUADRATIC);
 }
 
-void CameraDisplay::displayTrackedInput(InputArray input, FiducialX fiducials[], int numFiducials) {
-	Mat frameMat = input.getMat();
-	Point offset;
-	if (quadraticTracking) {
-		offset.x = (frameMat.cols - frameMat.rows) / 2;
-	}
-
+void CameraDisplay::drawTrackingInfo(Mat &frameMat, FiducialX fiducials[], int numFiducials) {
 	// Draw tracking information for fiducials
 	for (int i = 0; i < numFiducials; i++) {
 		FiducialX &fidx = fiducials[i];
@@ -53,20 +46,20 @@ void CameraDisplay::displayTrackedInput(InputArray input, FiducialX fiducials[],
 			// Draw a rotated rectangle
 			const Point points[] = {
 				// Top left corner
-				Point(offset.x + (int) (fidx.x + trackRectSize * cos(fidx.angle + 0.75f * PI)),
-					offset.y + (int) (fidx.y + trackRectSize * sin(fidx.angle + 0.75f * PI))),
+				Point((int) (fidx.x + trackRectSize * cos(fidx.angle + 0.75f * PI)),
+					(int) (fidx.y + trackRectSize * sin(fidx.angle + 0.75f * PI))),
 				// Top right corner
-				Point(offset.x + (int) (fidx.x + trackRectSize * cos(fidx.angle + 0.25f * PI)),
-					offset.y + (int) (fidx.y + trackRectSize * sin(fidx.angle + 0.25f * PI))),
+				Point((int) (fidx.x + trackRectSize * cos(fidx.angle + 0.25f * PI)),
+					(int) (fidx.y + trackRectSize * sin(fidx.angle + 0.25f * PI))),
 				// Bottom right corner
-				Point(offset.x + (int) (fidx.x + trackRectSize * cos(fidx.angle + 1.75f * PI)),
-					offset.y + (int) (fidx.y + trackRectSize * sin(fidx.angle + 1.75f * PI))),
+				Point((int) (fidx.x + trackRectSize * cos(fidx.angle + 1.75f * PI)),
+					(int) (fidx.y + trackRectSize * sin(fidx.angle + 1.75f * PI))),
 				// Arrow head
-				Point(offset.x + (int) (fidx.x + trackRectSize * 1.3f * cos(fidx.angle + 1.5f * PI)),
-					offset.y + (int) (fidx.y + trackRectSize * 1.3f * sin(fidx.angle + 1.5f * PI))),
+				Point((int) (fidx.x + trackRectSize * 1.3f * cos(fidx.angle + 1.5f * PI)),
+					(int) (fidx.y + trackRectSize * 1.3f * sin(fidx.angle + 1.5f * PI))),
 				// Bottom left corner
-				Point(offset.x + (int) (fidx.x + trackRectSize * cos(fidx.angle + 1.25f * PI)),
-					offset.y + (int) (fidx.y + trackRectSize * sin(fidx.angle + 1.25f * PI)))
+				Point((int) (fidx.x + trackRectSize * cos(fidx.angle + 1.25f * PI)),
+					(int) (fidx.y + trackRectSize * sin(fidx.angle + 1.25f * PI)))
 			};
 			int npt[] = { 5 };
 			const Scalar &color = trackColors.at(fidx.id % trackColors.size());
@@ -80,12 +73,20 @@ void CameraDisplay::displayTrackedInput(InputArray input, FiducialX fiducials[],
 				std::string name = trackNames.at(fidx.id % trackNames.size());
 				int baseLine;
 				Size &textSize = getTextSize(name, FONT_HERSHEY_SIMPLEX, 0.8, 2, &baseLine);
-				Point textPos(offset.x + (int) fidx.x - textSize.width / 2,
-					offset.y + (int) fidx.y + textSize.height / 2);
+				Point textPos((int) fidx.x - textSize.width / 2,
+					(int) fidx.y + textSize.height / 2);
 				putText(frameMat, name, textPos, FONT_HERSHEY_SIMPLEX, 0.8, fontColor, 2, CV_AA);
 			}
 		}
 	}
+}
 
-	imshow("input", frameMat);
+void CameraDisplay::displayTrackedImage(InputArray input) {
+	Mat frameMat = input.getMat();
+	Size frameSize = frameMat.size();
+	Mat displayMat(screenSize, frameMat.type());
+	frameMat.copyTo(Mat(displayMat, Rect(
+		(screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2,
+		frameSize.width, frameSize.height)));
+	imshow("input", displayMat);
 }

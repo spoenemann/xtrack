@@ -15,7 +15,8 @@ int intParam(std::unordered_map<std::string, std::string> &parameters,
 	int result = defaultValue;
 	if (parameters.find(key) != parameters.end()) {
 		std::stringstream convert(parameters[key]);
-		if (!(convert >> result)) {
+		convert >> result;
+		if (convert.fail()) {
 			std::cerr << "Invalid value set for parameter " << key << "\n";
 			throw 1;
 		}
@@ -46,7 +47,8 @@ double doubleParam(std::unordered_map<std::string, std::string> &parameters,
 	double result = defaultValue;
 	if (parameters.find(key) != parameters.end()) {
 		std::stringstream convert(parameters[key]);
-		if (!(convert >> result)) {
+		convert >> result;
+		if (convert.fail()) {
 			std::cerr << "Invalid value set for parameter " << key << "\n";
 			throw 1;
 		}

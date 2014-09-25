@@ -108,10 +108,6 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 	bool showContrastWindow = boolParam(parameters, PARAM_SHOW_CONTRAST, DEFAULT_SHOW_CONTRAST);
 	bool printData = boolParam(parameters, PARAM_PRINT, DEFAULT_PRINT);
 	
-	CameraDisplay *cameraDisplay = NULL;
-	if (showInputWindow) {
-		cameraDisplay = new CameraDisplay(parameters);
-	}
 	if (showContrastWindow) {
 		namedWindow("contrast", CV_WINDOW_AUTOSIZE | CV_WINDOW_KEEPRATIO | CV_GUI_EXPANDED);
 	}
@@ -119,9 +115,13 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 			(int) capture.get(CV_CAP_PROP_FRAME_HEIGHT));
 	Size trackedFrameSize(makeQuadratic ? actualFrameSize.height : actualFrameSize.width,
 			actualFrameSize.height);
+	CameraDisplay *cameraDisplay = NULL;
+	if (showInputWindow) {
+		cameraDisplay = new CameraDisplay(parameters, actualFrameSize);
+	}
 	FiducialFinder fiducialFinder(trackedFrameSize);
 	TuioServer tuioServer(parameters, trackedFrameSize);
-	CameraRecorder cameraRecorder(parameters, actualFrameSize);
+	CameraRecorder cameraRecorder(parameters, trackedFrameSize);
 	RecordMode recordMode = NORMAL;
 
 	Mat grayScaleMat, thresholdMat;
@@ -131,18 +131,10 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 
 		// Capture a frame
 		Mat frameMat;
-		if (recordMode == PLAYBACK) {
-			cameraRecorder.playbackFrame(frameMat);
-		} else {
-			capture >> frameMat;
-			if (frameMat.cols == 0 || frameMat.rows == 0) {
-				std::cout << "No image from camera.\n";
-				break;
-			}
-		}
-
-		if (recordMode == RECORDING) {
-			cameraRecorder.recordFrame(frameMat);
+		capture >> frameMat;
+		if (frameMat.cols == 0 || frameMat.rows == 0) {
+			std::cout << "No image from camera.\n";
+			break;
 		}
 
 		// Cut the frame to make it quadratic
@@ -176,9 +168,24 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 			printFiducials(fiducialFinder.fiducials, fidCount);
 		}
 
-		// Display the input image in a window
+		// Draw tracking information in the image to be displayed
+		if (cameraDisplay != NULL && recordMode != PLAYBACK) {
+			cameraDisplay->drawTrackingInfo(quadrMat, fiducialFinder.fiducials, fidCount);
+		}
+
+		// Record or play back video
+		switch (recordMode) {
+		case RECORDING:
+			cameraRecorder.recordFrame(quadrMat);
+			break;
+		case PLAYBACK:
+			cameraRecorder.playbackFrame(quadrMat);
+			break;
+		}
+
+		// Display the input image or video image in a window
 		if (cameraDisplay != NULL) {
-			cameraDisplay->displayTrackedInput(frameMat, fiducialFinder.fiducials, fidCount);
+			cameraDisplay->displayTrackedImage(quadrMat);
 		}
 
 		float frameEndClock = clock() * CLOCK_FACTOR;
@@ -223,7 +230,9 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 				cameraRecorder.stopRecording();
 				// fall through
 			case NORMAL:
-				if (cameraRecorder.startPlayback()) {
+				if (cameraDisplay == NULL) {
+					std::cerr << "Cannot play back video because the '" << PARAM_SHOW_INPUT << "' parameter is disabled."; 
+				} else if (cameraRecorder.startPlayback()) {
 					recordMode = PLAYBACK;
 				}
 				break;
@@ -232,6 +241,14 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 		}
 	} while (!term_requested);
 
+	switch (recordMode) {
+	case RECORDING:
+		cameraRecorder.stopRecording();
+		break;
+	case PLAYBACK:
+		cameraRecorder.stopPlayback();
+		break;
+	}
 	if (cameraDisplay != NULL) {
 		delete cameraDisplay;
 	}

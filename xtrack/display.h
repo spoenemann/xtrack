@@ -14,13 +14,14 @@
 
 class CameraDisplay {
 public:
-	CameraDisplay(std::unordered_map<std::string, std::string> &parameters);
+	CameraDisplay(std::unordered_map<std::string, std::string> &parameters, cv::Size &screenSize);
 
-	void displayTrackedInput(cv::InputArray input, FiducialX fiducials[], int numFiducials);
+	void drawTrackingInfo(cv::Mat &frameMat, FiducialX fiducials[], int numFiducials);
+	void displayTrackedImage(cv::InputArray input);
 
 private:
 	int trackRectSize;
-	bool quadraticTracking;
+	cv::Size screenSize;
 	std::vector<std::string> trackNames;
 	std::vector<cv::Scalar> trackColors;
 	cv::Scalar fontColor;

@@ -101,7 +101,7 @@ void CameraRecorder::stopPlayback() {
 	std::cout << "Stopped playback.\n";
 }
 
-int CameraRecorder::getNextFileNum(const int num) {
+int CameraRecorder::getNextFileNum(const int currentFileNum) {
 	int nextFileNum = -1;
 
     WIN32_FIND_DATA file_data;
@@ -114,10 +114,10 @@ int CameraRecorder::getNextFileNum(const int num) {
 				std::stringstream convert(fileName.substr(FILE_PREFIX.length(),
 					fileName.length() - FILE_PREFIX.length() - FILE_EXT.length()));
 				int fileNum;
-				if ((convert >> fileNum) && (
-						nextFileNum < 0
-						|| fileNum > num && (nextFileNum <= num || fileNum < nextFileNum)
-						|| nextFileNum <= num && fileNum < nextFileNum)) {
+				convert >> fileNum;
+				if (!convert.fail() && (nextFileNum < 0
+						|| fileNum > currentFileNum && (nextFileNum <= currentFileNum || fileNum < nextFileNum)
+						|| nextFileNum <= currentFileNum && fileNum < nextFileNum)) {
 					nextFileNum = fileNum;
 				}
 			}
@@ -141,7 +141,8 @@ int CameraRecorder::getLastFileNum() {
 				std::stringstream convert(fileName.substr(FILE_PREFIX.length(),
 					fileName.length() - FILE_PREFIX.length() - FILE_EXT.length()));
 				int fileNum;
-				if ((convert >> fileNum) && fileNum > lastFileNum) {
+				convert >> fileNum;
+				if (!convert.fail() && fileNum > lastFileNum) {
 					lastFileNum = fileNum;
 				}
 			}
