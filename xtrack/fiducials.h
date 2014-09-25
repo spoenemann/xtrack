@@ -22,6 +22,8 @@ public:
 	FiducialFinder(cv::Size &fsize);
 	~FiducialFinder();
 
+	// Find fiducials and store them in the 'fiducials' array. The return value
+	// is the number of actually found fiducials.
 	int findFiducials(cv::InputArray);
 
 private:

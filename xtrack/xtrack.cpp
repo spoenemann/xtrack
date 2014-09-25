@@ -28,6 +28,7 @@ static void signal_term(int signal) {
 
 void process(std::unordered_map<std::string, std::string> &parameters);
 
+// The main function of the application.
 int _tmain(int argc, _TCHAR* argv[])
 {
 	signal(SIGTERM, signal_term);
@@ -55,6 +56,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	return 0;
 }
 
+// Print the tracked fiducials on the command line.
 void printFiducials(FiducialX fiducials[], int numFiducials) {
 	int printedFids = 0;
 	for (int i = 0; i < numFiducials; i++) {
@@ -75,6 +77,7 @@ void printFiducials(FiducialX fiducials[], int numFiducials) {
 
 using namespace cv;
 
+// Display the contrast image in a window.
 void displayContrastImage(InputArray input) {
 	Mat frameMat = input.getMat();
 	int centerx = frameMat.cols / 2;
@@ -91,6 +94,7 @@ void displayContrastImage(InputArray input) {
 	imshow("contrast", frameMat);
 }
 
+// Process the camera stream until the application is quit.
 void process(std::unordered_map<std::string, std::string> &parameters) {
 	// Create the camera capture
 	VideoCapture capture(intParam(parameters, PARAM_CAMERA, DEFAULT_CAMERA));
@@ -101,6 +105,7 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 	capture.set(CV_CAP_PROP_FRAME_WIDTH, intParam(parameters, PARAM_FRAME_WIDTH, DEFAULT_FRAME_WIDTH));
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT, intParam(parameters, PARAM_FRAME_HEIGHT, DEFAULT_FRAME_HEIGHT));
 
+	// Read command line parameters
 	int frameTime = intParam(parameters, PARAM_FRAME_TIME, DEFAULT_FRAME_TIME);
 	int thresholdVal = intParam(parameters, PARAM_THRESHOLD, DEFAULT_THRESHOLD);
 	bool makeQuadratic = boolParam(parameters, PARAM_QUADRATIC, DEFAULT_QUADRATIC);
@@ -108,6 +113,7 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 	bool showContrastWindow = boolParam(parameters, PARAM_SHOW_CONTRAST, DEFAULT_SHOW_CONTRAST);
 	bool printData = boolParam(parameters, PARAM_PRINT, DEFAULT_PRINT);
 	
+	// Initialize processing data
 	if (showContrastWindow) {
 		namedWindow("contrast", CV_WINDOW_AUTOSIZE | CV_WINDOW_KEEPRATIO | CV_GUI_EXPANDED);
 	}

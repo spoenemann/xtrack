@@ -20,11 +20,18 @@ class CameraRecorder {
 public:
 	CameraRecorder(std::unordered_map<std::string, std::string> &parameters, cv::Size &fsize);
 
+	// Start recording a new video with the selected codec. If no coded was selected,
+	// a dialog is opened listing the available codecs.
 	bool startRecording();
+	// Record the next frame.
 	void recordFrame(cv::InputArray input);
+	// Stop recording.
 	void stopRecording();
+	// Start playback of the last recorded or played video file.
 	bool startPlayback();
+	// Play back the next frame.
 	void playbackFrame(cv::OutputArray output);
+	// Stop playback.
 	void stopPlayback();
 
 private:

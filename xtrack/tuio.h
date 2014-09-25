@@ -17,6 +17,7 @@ public:
 	TuioServer(std::unordered_map<std::string, std::string> &parameters, cv::Size &fsize);
 	~TuioServer();
 
+	// Send a TUIO message containing tracking information for the given fiducials.
 	void sendMessage(FiducialX fiducials[], int numFiducials);
 
 private:
