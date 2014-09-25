@@ -78,7 +78,7 @@ void printFiducials(FiducialX fiducials[], int numFiducials) {
 using namespace cv;
 
 // Display the contrast image in a window.
-void displayContrastImage(InputArray input) {
+void displayContrastImage(InputArray input, RecordMode recordMode) {
 	Mat frameMat = input.getMat();
 	int centerx = frameMat.cols / 2;
 	int centery = frameMat.rows / 2;
@@ -90,6 +90,17 @@ void displayContrastImage(InputArray input) {
 
 	// Draw the arena
 	circle(frameMat, Point(centerx, centery), 500, color, 2, CV_AA);
+
+	// Draw a symbol for the current mode
+	switch (recordMode) {
+	case RECORDING:
+		circle(frameMat, Point(50, 50), 20, color, CV_FILLED, CV_AA);
+		break;
+	case PLAYBACK:
+		const Point points[] = { Point(30, 30), Point(70, 50), Point(30, 70) };
+		fillConvexPoly(frameMat, points, 3, color, CV_AA);
+		break;
+	}
 
 	imshow("contrast", frameMat);
 }
@@ -166,7 +177,7 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 
 		// Display the contrast image in a window
         if (showContrastWindow) {
-			displayContrastImage(thresholdMat);
+			displayContrastImage(thresholdMat, recordMode);
 		}
 
 		// Print fiducial data

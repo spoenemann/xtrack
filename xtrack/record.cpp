@@ -26,7 +26,13 @@ CameraRecorder::CameraRecorder(std::unordered_map<std::string, std::string> &par
 	if (videoDir.at(videoDir.length() - 1) != '\\') {
 		videoDir.append("\\");
 	}
-	this->frameRate = 1000 / frameTime;
+	double origFrameRate = 1000.0 / (double) frameTime;
+	this->recordFrameRate = origFrameRate * doubleParam(parameters, PARAM_RECORD_FPS_SCALE, DEFAULT_RECORD_FPS_SCALE);
+	if (recordFrameRate <= 0 || recordFrameRate > origFrameRate) {
+		std::cerr << "Illegal value given for parameter " << PARAM_RECORD_FPS_SCALE << "\n";
+        throw 1;
+	}
+	this->frameRateRatio = recordFrameRate / origFrameRate;
 	std::string codecStr = stringParam(parameters, PARAM_CODEC, DEFAULT_CODEC);
 	if (codecStr.length() == 4) {
 		this->codec = CV_FOURCC(codecStr.at(0), codecStr.at(1), codecStr.at(2), codecStr.at(3));
@@ -43,10 +49,11 @@ CameraRecorder::CameraRecorder(std::unordered_map<std::string, std::string> &par
 bool CameraRecorder::startRecording() {
 	int nextFileNum = getLastFileNum() + 1;
 	std::string fileName = getFileName(nextFileNum);
-	videoWriter.open(fileName, codec, frameRate, recordSize);
+	videoWriter.open(fileName, codec, recordFrameRate, recordSize);
 	if (videoWriter.isOpened()) {
 		std::cout << "Recording to file " << fileName << "\n";
 		lastPlayedFileNum = nextFileNum;
+		frameProgress = 0;
 	} else {
 		std::cerr << "Could not open output file " << fileName << " for video recording.\n";
 		return false;
@@ -55,9 +62,13 @@ bool CameraRecorder::startRecording() {
 }
 
 void CameraRecorder::recordFrame(InputArray input) {
-	Mat resizedMat;
-	resize(input.getMat(), resizedMat, recordSize);
-	videoWriter << resizedMat;
+	frameProgress += frameRateRatio;
+	if (frameProgress >= 1.0) {
+		Mat resizedMat;
+		resize(input.getMat(), resizedMat, recordSize);
+		videoWriter << resizedMat;
+		frameProgress -= 1.0;
+	}
 }
 
 void CameraRecorder::stopRecording() {
@@ -75,6 +86,8 @@ bool CameraRecorder::startPlayback() {
 	if (videoReader.isOpened()) {
 		std::cout << "Starting playback at file " << fileName << "\n";
 		lastPlayedFileNum = nextFileNum;
+		frameProgress = 0;
+		lastPlayedFrame = new Mat(origSize, CV_8UC3);
 	} else {
 		std::cerr << "No video file found for playback.\n";
 		return false;
@@ -83,21 +96,30 @@ bool CameraRecorder::startPlayback() {
 }
 
 void CameraRecorder::playbackFrame(OutputArray output) {
-	Mat videoFileFrame;
-	videoReader >> videoFileFrame;
-	while (videoFileFrame.rows == 0 || videoFileFrame.cols == 0) {
-		videoReader.release();
-		lastPlayedFileNum = getNextFileNum(lastPlayedFileNum);
-		std::string fileName = getFileName(lastPlayedFileNum);
-		videoReader.open(fileName);
+	frameProgress += frameRateRatio;
+	if (frameProgress >= 1.0) {
+		delete lastPlayedFrame;
+		Mat videoFileFrame;
 		videoReader >> videoFileFrame;
-		std::cout << "Next playback at file " << fileName << "\n";
+		while (videoFileFrame.rows == 0 || videoFileFrame.cols == 0) {
+			videoReader.release();
+			lastPlayedFileNum = getNextFileNum(lastPlayedFileNum);
+			std::string fileName = getFileName(lastPlayedFileNum);
+			videoReader.open(fileName);
+			videoReader >> videoFileFrame;
+			std::cout << "Next playback at file " << fileName << "\n";
+		}
+		resize(videoFileFrame, output, origSize);
+		frameProgress -= 1.0;
+		lastPlayedFrame = new Mat(output.getMat());
+	} else {
+		lastPlayedFrame->copyTo(output.getMat());
 	}
-	resize(videoFileFrame, output, origSize);
 }
 
 void CameraRecorder::stopPlayback() {
 	videoReader.release();
+	delete lastPlayedFrame;
 	std::cout << "Stopped playback.\n";
 }
 

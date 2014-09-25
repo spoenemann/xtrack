@@ -86,9 +86,15 @@
 #define DEFAULT_CODEC "PIM1"
 #define PARAM_CODEC "codec"
 
-// A scaling factor applied to recorded videos. This helps to reduce the size of video files.
+// A scaling factor applied to the resolution of recorded videos.
+// This helps to reduce the size of video files.
 #define DEFAULT_RECORD_SCALE 0.4
 #define PARAM_RECORD_SCALE "recordscale"
+
+// A scaling factor applied to the frame rate of recorded videos.
+// This helps to reduce the size of video files.
+#define DEFAULT_RECORD_FPS_SCALE 0.6
+#define PARAM_RECORD_FPS_SCALE "recfpsscale"
 
 
 // Utility methods for accessing parameter values

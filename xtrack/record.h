@@ -38,11 +38,14 @@ private:
 	cv::VideoWriter videoWriter;
 	cv::VideoCapture videoReader;
 	std::string videoDir;
-	int frameRate;
+	double recordFrameRate;
+	double frameRateRatio;
+	double frameProgress;
 	int codec;
 	cv::Size origSize;
 	cv::Size recordSize;
 	int lastPlayedFileNum;
+	cv::Mat *lastPlayedFrame;
 	
 	int getNextFileNum(const int num);
 	int getLastFileNum();
