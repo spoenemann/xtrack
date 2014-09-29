@@ -78,7 +78,7 @@ void printFiducials(FiducialX fiducials[], int numFiducials) {
 using namespace cv;
 
 // Display the contrast image in a window.
-void displayContrastImage(InputArray input, RecordMode recordMode) {
+void displayContrastImage(InputArray input, RecordMode recordMode, int arenaRadius) {
 	Mat frameMat = input.getMat();
 	int centerx = frameMat.cols / 2;
 	int centery = frameMat.rows / 2;
@@ -89,7 +89,7 @@ void displayContrastImage(InputArray input, RecordMode recordMode) {
 	line(frameMat, Point(centerx, centery - 20), Point(centerx, centery + 20), color, 2);
 
 	// Draw the arena
-	circle(frameMat, Point(centerx, centery), 500, color, 2, CV_AA);
+	circle(frameMat, Point(centerx, centery), arenaRadius, color, 2, CV_AA);
 
 	// Draw a symbol for the current mode
 	switch (recordMode) {
@@ -123,6 +123,7 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 	bool showInputWindow = boolParam(parameters, PARAM_SHOW_INPUT, DEFAULT_SHOW_INPUT);
 	bool showContrastWindow = boolParam(parameters, PARAM_SHOW_CONTRAST, DEFAULT_SHOW_CONTRAST);
 	bool printData = boolParam(parameters, PARAM_PRINT, DEFAULT_PRINT);
+	int arenaRadius = intParam(parameters, PARAM_ARENA_RADIUS, DEFAULT_ARENA_RADIUS);
 	
 	// Initialize processing data
 	if (showContrastWindow) {
@@ -177,7 +178,7 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 
 		// Display the contrast image in a window
         if (showContrastWindow) {
-			displayContrastImage(thresholdMat, recordMode);
+			displayContrastImage(thresholdMat, recordMode, arenaRadius);
 		}
 
 		// Print fiducial data

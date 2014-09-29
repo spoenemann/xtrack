@@ -96,6 +96,12 @@
 #define DEFAULT_RECORD_FPS_SCALE 0.6
 #define PARAM_RECORD_FPS_SCALE "recfpsscale"
 
+// A circle with this radius is drawn in the contrast image window.
+// It can be used to calibrate the camera position according to a
+// given arena.
+#define DEFAULT_ARENA_RADIUS 100
+#define PARAM_ARENA_RADIUS "arenarad"
+
 
 // Utility methods for accessing parameter values
 
