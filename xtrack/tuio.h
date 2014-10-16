@@ -11,19 +11,19 @@
 #pragma once
 
 #include "stdafx.h"
+#include "fiducials.h"
 
 class TuioServer {
 public:
-	TuioServer(std::unordered_map<std::string, std::string> &parameters, cv::Size &fsize);
+	TuioServer(std::unordered_map<std::string, std::string> &parameters);
 	~TuioServer();
 
 	// Send a TUIO message containing tracking information for the given fiducials.
-	void sendMessage(FiducialX fiducials[], int numFiducials);
+	void sendMessage(TrackedFiducial fiducials[]);
 
 private:
 	std::string ipaddr;
 	unsigned short port;
 	int fseq;
 	int sock;
-	cv::Size fsize;
 };

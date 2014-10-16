@@ -18,7 +18,7 @@
 #include "display.h"
 #include "record.h"
 
-const float CLOCK_FACTOR = CLOCKS_PER_SEC / 1000.0f;
+const double CLOCK_FACTOR = CLOCKS_PER_SEC / 1000.0;
 
 static bool term_requested = false;
 
@@ -57,16 +57,16 @@ int _tmain(int argc, _TCHAR* argv[])
 }
 
 // Print the tracked fiducials on the command line.
-void printFiducials(FiducialX fiducials[], int numFiducials) {
+void printFiducials(TrackedFiducial fiducials[]) {
 	int printedFids = 0;
-	for (int i = 0; i < numFiducials; i++) {
-		FiducialX &fidx = fiducials[i];
-		if (fidx.id >= 0) {
+	for (int i = 0; i < MAX_FIDUCIALS; i++) {
+		TrackedFiducial &fid = fiducials[i];
+		if (fid.isTracked) {
 			if (printedFids > 0) {
 				std::cout << "  |  ";
 			}
-			std::cout << "id " << fidx.id << " (" << (int) fidx.x << ", " << (int) fidx.y
-				<< " / " << (int) (fidx.angle / (2 * PI) * 360) << ")";
+			std::cout << "id " << i << " (" << (int) fid.x << ", " << (int) fid.y
+				<< " / " << (int) (fid.a / (2 * PI) * 360) << ")";
 			printedFids++;
 		}
 	}
@@ -138,14 +138,14 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 		cameraDisplay = new CameraDisplay(parameters, actualFrameSize);
 	}
 	FiducialFinder fiducialFinder(trackedFrameSize);
-	TuioServer tuioServer(parameters, trackedFrameSize);
+	TuioServer tuioServer(parameters);
 	CameraRecorder cameraRecorder(parameters, trackedFrameSize);
 	RecordMode recordMode = NORMAL;
 
 	Mat grayScaleMat, thresholdMat;
 
 	do {
-		float frameStartClock = clock() * CLOCK_FACTOR;
+		double frameStartClock = clock() * CLOCK_FACTOR;
 
 		// Capture a frame
 		Mat frameMat;
@@ -171,10 +171,10 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 		threshold(grayScaleMat, thresholdMat, thresholdVal, 255, THRESH_BINARY);
 
 		// Find fiducials
-		int fidCount = fiducialFinder.findFiducials(thresholdMat);
+		fiducialFinder.findFiducials(thresholdMat, frameStartClock);
 
 		// Send TUIO message
-		tuioServer.sendMessage(fiducialFinder.fiducials, fidCount);
+		tuioServer.sendMessage(fiducialFinder.trackedFiducials);
 
 		// Display the contrast image in a window
         if (showContrastWindow) {
@@ -183,12 +183,12 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 
 		// Print fiducial data
 		if (printData) {
-			printFiducials(fiducialFinder.fiducials, fidCount);
+			printFiducials(fiducialFinder.trackedFiducials);
 		}
 
 		// Draw tracking information in the image to be displayed
 		if (cameraDisplay != NULL && recordMode != PLAYBACK) {
-			cameraDisplay->drawTrackingInfo(quadrMat, fiducialFinder.fiducials, fidCount);
+			cameraDisplay->drawTrackingInfo(quadrMat, fiducialFinder.trackedFiducials);
 		}
 
 		// Record or play back video
@@ -206,8 +206,8 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 			cameraDisplay->displayTrackedImage(quadrMat);
 		}
 
-		float frameEndClock = clock() * CLOCK_FACTOR;
-		int waitTime = frameTime - (int) (frameEndClock - frameStartClock + 0.5f);
+		double frameEndClock = clock() * CLOCK_FACTOR;
+		int waitTime = frameTime - (int) (frameEndClock - frameStartClock + 0.5);
 		// Caution: waitTime <= 0 means to wait forever
 		if (waitTime <= 0) {
 			waitTime = 1;

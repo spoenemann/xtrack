@@ -38,31 +38,33 @@ CameraDisplay::CameraDisplay(std::unordered_map<std::string, std::string> &param
 	this->fontColor = Scalar(230, 230, 230);
 }
 
-void CameraDisplay::drawTrackingInfo(Mat &frameMat, FiducialX fiducials[], int numFiducials) {
+void CameraDisplay::drawTrackingInfo(Mat &frameMat, TrackedFiducial fiducials[]) {
 	// Draw tracking information for fiducials
-	for (int i = 0; i < numFiducials; i++) {
-		FiducialX &fidx = fiducials[i];
-		if (fidx.id >= 0) {
+	for (int i = 0; i < MAX_FIDUCIALS; i++) {
+		TrackedFiducial &fid = fiducials[i];
+		if (fid.isTracked) {
+			float fidx = fid.x * frameMat.cols;
+			float fidy = fid.y * frameMat.rows;
 			// Draw a rotated rectangle
 			const Point points[] = {
 				// Top left corner
-				Point((int) (fidx.x + trackRectSize * cos(fidx.angle + 0.75f * PI)),
-					(int) (fidx.y + trackRectSize * sin(fidx.angle + 0.75f * PI))),
+				Point((int) (fidx + trackRectSize * cos(fid.a + 0.75f * PI)),
+					(int) (fidy + trackRectSize * sin(fid.a + 0.75f * PI))),
 				// Top right corner
-				Point((int) (fidx.x + trackRectSize * cos(fidx.angle + 0.25f * PI)),
-					(int) (fidx.y + trackRectSize * sin(fidx.angle + 0.25f * PI))),
+				Point((int) (fidx + trackRectSize * cos(fid.a + 0.25f * PI)),
+					(int) (fidy + trackRectSize * sin(fid.a + 0.25f * PI))),
 				// Bottom right corner
-				Point((int) (fidx.x + trackRectSize * cos(fidx.angle + 1.75f * PI)),
-					(int) (fidx.y + trackRectSize * sin(fidx.angle + 1.75f * PI))),
+				Point((int) (fidx + trackRectSize * cos(fid.a + 1.75f * PI)),
+					(int) (fidy + trackRectSize * sin(fid.a + 1.75f * PI))),
 				// Arrow head
-				Point((int) (fidx.x + trackRectSize * 1.3f * cos(fidx.angle + 1.5f * PI)),
-					(int) (fidx.y + trackRectSize * 1.3f * sin(fidx.angle + 1.5f * PI))),
+				Point((int) (fidx + trackRectSize * 1.3f * cos(fid.a + 1.5f * PI)),
+					(int) (fidy + trackRectSize * 1.3f * sin(fid.a + 1.5f * PI))),
 				// Bottom left corner
-				Point((int) (fidx.x + trackRectSize * cos(fidx.angle + 1.25f * PI)),
-					(int) (fidx.y + trackRectSize * sin(fidx.angle + 1.25f * PI)))
+				Point((int) (fidx + trackRectSize * cos(fid.a + 1.25f * PI)),
+					(int) (fidy + trackRectSize * sin(fid.a + 1.25f * PI)))
 			};
 			int npt[] = { 5 };
-			const Scalar &color = trackColors.at(fidx.id % trackColors.size());
+			const Scalar &color = trackColors.at(i % trackColors.size());
 			fillConvexPoly(frameMat, points, *npt, color);
 			const Point* ppt[] = { points };
 			const Scalar outlineColor = color * 0.7;
@@ -70,11 +72,11 @@ void CameraDisplay::drawTrackingInfo(Mat &frameMat, FiducialX fiducials[], int n
 
 			// Draw the tracked object name
 			if (!trackNames.empty()) {
-				std::string name = trackNames.at(fidx.id % trackNames.size());
+				std::string name = trackNames.at(i % trackNames.size());
 				int baseLine;
 				Size &textSize = getTextSize(name, FONT_HERSHEY_SIMPLEX, 0.8, 2, &baseLine);
-				Point textPos((int) fidx.x - textSize.width / 2,
-					(int) fidx.y + textSize.height / 2);
+				Point textPos((int) fidx - textSize.width / 2,
+					(int) fidy + textSize.height / 2);
 				putText(frameMat, name, textPos, FONT_HERSHEY_SIMPLEX, 0.8, fontColor, 2, CV_AA);
 			}
 		}
@@ -84,7 +86,7 @@ void CameraDisplay::drawTrackingInfo(Mat &frameMat, FiducialX fiducials[], int n
 void CameraDisplay::displayTrackedImage(InputArray input) {
 	Mat frameMat = input.getMat();
 	Size frameSize = frameMat.size();
-	Mat displayMat(screenSize, frameMat.type());
+	Mat displayMat = Mat::zeros(screenSize, frameMat.type());
 	frameMat.copyTo(Mat(displayMat, Rect(
 		(screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2,
 		frameSize.width, frameSize.height)));

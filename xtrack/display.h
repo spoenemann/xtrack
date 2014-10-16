@@ -11,13 +11,14 @@
 #pragma once
 
 #include "stdafx.h"
+#include "fiducials.h"
 
 class CameraDisplay {
 public:
 	CameraDisplay(std::unordered_map<std::string, std::string> &parameters, cv::Size &screenSize);
 
 	// Draw tracking information onto the given frame.
-	void drawTrackingInfo(cv::Mat &frameMat, FiducialX fiducials[], int numFiducials);
+	void drawTrackingInfo(cv::Mat &frameMat, TrackedFiducial fiducials[]);
 	// Display the given frame in the input window.
 	void displayTrackedImage(cv::InputArray input);
 

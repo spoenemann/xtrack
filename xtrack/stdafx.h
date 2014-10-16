@@ -17,10 +17,11 @@
 #include <sstream>
 #include <unordered_map>
 #include <tchar.h>
+#include <cmath>
+#include <limits>
 
 #include "targetver.h"
 #include "parameters.h"
 #include "opencv2/opencv.hpp"
-#include "fidtrackX.h"
 
 const float PI = 3.14159265358979f;

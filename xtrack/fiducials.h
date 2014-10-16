@@ -11,24 +11,52 @@
 #pragma once
 
 #include "stdafx.h"
+#include "fidtrackX.h"
 #include "segment.h"
 
-#define MAX_FIDUCIALS 16
+#define MAX_FIDUCIALS 4
+
+class TrackedFiducial {
+public:
+	// Has the fiducial been tracked?
+	bool isTracked;
+	// The timestamp of the tracking information (in seconds)
+	double timestamp;
+	// Horizontal position in the range [0,1]
+	float x;
+	// Vertical position in the range [0,1]
+	float y;
+	// Rotation angle of the fiducial
+	float a;
+	// Horizontal motion speed
+	float xspeed;
+	// Vertical motion speed
+	float yspeed;
+	// Rotation speed
+	float aspeed;
+	// Motion acceleration
+	float xyacc;
+	// Rotation acceleration
+	float aacc;
+};
 
 class FiducialFinder {
 public:
-	FiducialX fiducials[MAX_FIDUCIALS];
+	// Array of tracked fiducials: the array index corresponds to the fiducial id
+	TrackedFiducial trackedFiducials[MAX_FIDUCIALS];
 
 	FiducialFinder(cv::Size &fsize);
 	~FiducialFinder();
 
 	// Find fiducials and store them in the 'fiducials' array. The return value
 	// is the number of actually found fiducials.
-	int findFiducials(cv::InputArray);
+	int findFiducials(cv::InputArray, double timestamp);
 
 private:
+	FiducialX rawFiducials[MAX_FIDUCIALS];
 	Segmenter segmenter;
 	TreeIdMap treeidmap;
 	FidtrackerX fidtrackerx;
 	ShortPoint *dmap;
+	cv::Size fsize;
 };

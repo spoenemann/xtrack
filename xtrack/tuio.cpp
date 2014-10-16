@@ -16,11 +16,10 @@
 
 #define OSC_PATH "/tuio/2Dobj"
 
-TuioServer::TuioServer(std::unordered_map<std::string, std::string> &parameters,
-		cv::Size &fsize) {
+TuioServer::TuioServer(std::unordered_map<std::string, std::string> &parameters) {
 	this->ipaddr = stringParam(parameters, PARAM_ADDRESS, DEFAULT_ADDRESS);
 	this->port = intParam(parameters, PARAM_PORT, DEFAULT_PORT);
-	this->fsize = fsize;
+	this->fseq = 0;
 
 	WSADATA wsaData;
 	int startupResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -43,36 +42,38 @@ TuioServer::~TuioServer() {
 	WSACleanup();
 }
 
-void TuioServer::sendMessage(FiducialX fiducials[], int numFiducials) {
+void TuioServer::sendMessage(TrackedFiducial fiducials[]) {
 	WOscBundle bundle;
 
 	// Alive message
 	WOscMessage *aliveMsg = new WOscMessage(OSC_PATH);
 	aliveMsg->Add("alive");
-	for (int i = 0; i < numFiducials; i++) {
-		FiducialX &fidx = fiducials[i];
-		if (fidx.id >= 0) {
-			aliveMsg->Add(fidx.id);
+	for (int i = 0; i < MAX_FIDUCIALS; i++) {
+		TrackedFiducial &fid = fiducials[i];
+		if (fid.isTracked) {
+			aliveMsg->Add(i);
 		}
 	}
 	bundle.Add(aliveMsg);
 
 	// Set message
-	for (int i = 0; i < numFiducials; i++) {
-		FiducialX &fidx = fiducials[i];
-		WOscMessage *setMsg = new WOscMessage(OSC_PATH);
-		setMsg->Add("set");
-		setMsg->Add(fidx.id); // session id
-		setMsg->Add(fidx.id); // fiducial id
-		setMsg->Add(fidx.x / fsize.width); // horizontal position
-		setMsg->Add(fidx.y / fsize.height); // vertical position
-		setMsg->Add(fidx.angle); // angle
-		setMsg->Add(0.0f); // horizontal motion speed
-		setMsg->Add(0.0f); // vertical motion speed
-		setMsg->Add(0.0f); // rotation speed
-		setMsg->Add(0.0f); // motion acceleration
-		setMsg->Add(0.0f); // rotation acceleration
-		bundle.Add(setMsg);
+	for (int i = 0; i < MAX_FIDUCIALS; i++) {
+		TrackedFiducial &fid = fiducials[i];
+		if (fid.isTracked) {
+			WOscMessage *setMsg = new WOscMessage(OSC_PATH);
+			setMsg->Add("set");
+			setMsg->Add(i); // session id
+			setMsg->Add(i); // fiducial id
+			setMsg->Add(fid.x); // horizontal position
+			setMsg->Add(fid.y); // vertical position
+			setMsg->Add(fid.a); // angle
+			setMsg->Add(fid.xspeed); // horizontal motion speed
+			setMsg->Add(fid.yspeed); // vertical motion speed
+			setMsg->Add(fid.aspeed); // rotation speed
+			setMsg->Add(fid.xyacc); // motion acceleration
+			setMsg->Add(fid.aacc); // rotation acceleration
+			bundle.Add(setMsg);
+		}
 	}
 
 	// Frame sequence message
