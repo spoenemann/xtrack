@@ -33,8 +33,8 @@ CameraDisplay::CameraDisplay(std::unordered_map<std::string, std::string> &param
 	}
 
 	// Define some fixed colors
-	this->trackColors.push_back(Scalar(180, 40, 30));
-	this->trackColors.push_back(Scalar(30, 40, 180));
+	this->trackColors.push_back(Scalar(209, 145, 88));
+	this->trackColors.push_back(Scalar(96, 88, 218));
 	this->fontColor = Scalar(230, 230, 230);
 }
 

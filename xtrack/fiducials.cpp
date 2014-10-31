@@ -91,7 +91,12 @@ int FiducialFinder::findFiducials(cv::InputArray input, double timestamp) {
 				float oldaSpeed = trackedFid.aspeed;
 				trackedFid.a = fidx.angle;
 				if (!isNaN(olda)) {
-					trackedFid.aspeed = (trackedFid.a - olda) / timeDiff;
+					float delta = trackedFid.a - olda;
+					if (abs(delta + 2*PI) < abs(delta))
+						delta += 2*PI;
+					else if (abs(delta - 2*PI) < abs(delta))
+						delta -= 2*PI;
+					trackedFid.aspeed = delta / timeDiff;
 					if (!isNaN(oldaSpeed)) {
 						trackedFid.aacc = (trackedFid.aspeed - oldaSpeed) / timeDiff;
 					}

@@ -119,6 +119,7 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 	// Read command line parameters
 	int frameTime = intParam(parameters, PARAM_FRAME_TIME, DEFAULT_FRAME_TIME);
 	int thresholdVal = intParam(parameters, PARAM_THRESHOLD, DEFAULT_THRESHOLD);
+	bool rotateImage = boolParam(parameters, PARAM_ROTATE, DEFAULT_ROTATE);
 	bool makeQuadratic = boolParam(parameters, PARAM_QUADRATIC, DEFAULT_QUADRATIC);
 	bool showInputWindow = boolParam(parameters, PARAM_SHOW_INPUT, DEFAULT_SHOW_INPUT);
 	bool showContrastWindow = boolParam(parameters, PARAM_SHOW_CONTRAST, DEFAULT_SHOW_CONTRAST);
@@ -142,7 +143,7 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 	CameraRecorder cameraRecorder(parameters, trackedFrameSize);
 	RecordMode recordMode = NORMAL;
 
-	Mat grayScaleMat, thresholdMat;
+	Mat flipMat, grayScaleMat, thresholdMat, displayMat;
 
 	do {
 		double frameStartClock = clock() * CLOCK_FACTOR;
@@ -160,11 +161,18 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 			? Rect((frameMat.cols - frameMat.rows) / 2, 0, frameMat.rows, frameMat.rows)
 			: Rect(0, 0, frameMat.cols, frameMat.rows));
 
-		// Convert to grayscale
-		if (quadrMat.channels() == 3) {
-			cvtColor(quadrMat, grayScaleMat, CV_BGR2GRAY);
+		// Rotate the frame by 180 degrees
+		if (rotateImage) {
+			flip(quadrMat, flipMat, -1);
 		} else {
-			grayScaleMat = quadrMat;
+			flipMat = quadrMat;
+		}
+
+		// Convert to grayscale
+		if (flipMat.channels() == 3) {
+			cvtColor(flipMat, grayScaleMat, CV_BGR2GRAY);
+		} else {
+			grayScaleMat = flipMat;
 		}
 
 		// Apply a threshold
@@ -188,22 +196,21 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 
 		// Draw tracking information in the image to be displayed
 		if (cameraDisplay != NULL && recordMode != PLAYBACK) {
-			cameraDisplay->drawTrackingInfo(quadrMat, fiducialFinder.trackedFiducials);
+			displayMat = flipMat;
+			cameraDisplay->drawTrackingInfo(displayMat, fiducialFinder.trackedFiducials);
+			cameraDisplay->displayTrackedImage(displayMat);
 		}
 
 		// Record or play back video
 		switch (recordMode) {
 		case RECORDING:
-			cameraRecorder.recordFrame(quadrMat);
+			cameraRecorder.recordFrame(displayMat);
 			break;
 		case PLAYBACK:
-			cameraRecorder.playbackFrame(quadrMat);
+			Mat playbackMat;
+			cameraRecorder.playbackFrame(playbackMat);
+			cameraDisplay->displayTrackedImage(playbackMat);
 			break;
-		}
-
-		// Display the input image or video image in a window
-		if (cameraDisplay != NULL) {
-			cameraDisplay->displayTrackedImage(quadrMat);
 		}
 
 		double frameEndClock = clock() * CLOCK_FACTOR;

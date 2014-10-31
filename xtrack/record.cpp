@@ -113,7 +113,7 @@ void CameraRecorder::playbackFrame(OutputArray output) {
 		frameProgress -= 1.0;
 		lastPlayedFrame = new Mat(output.getMat());
 	} else {
-		lastPlayedFrame->copyTo(output.getMat());
+		lastPlayedFrame->copyTo(output);
 	}
 }
 

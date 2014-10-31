@@ -47,6 +47,10 @@
 #define DEFAULT_FRAME_HEIGHT 240
 #define PARAM_FRAME_HEIGHT "fheight"
 
+// If activated, the camera image is rotated by 180 degrees
+#define DEFAULT_ROTATE false
+#define PARAM_ROTATE "rotate"
+
 // If activated, the input frames are cut such that only a quadratic area is processed.
 // The resolution of this area is fheight x fheight.
 #define DEFAULT_QUADRATIC false
