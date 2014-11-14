@@ -113,8 +113,10 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
         std::cerr << "Camera cannot be opened\n";
 		throw 1;
 	}
-	capture.set(CV_CAP_PROP_FRAME_WIDTH, intParam(parameters, PARAM_FRAME_WIDTH, DEFAULT_FRAME_WIDTH));
-	capture.set(CV_CAP_PROP_FRAME_HEIGHT, intParam(parameters, PARAM_FRAME_HEIGHT, DEFAULT_FRAME_HEIGHT));
+	Size frameSize(intParam(parameters, PARAM_FRAME_WIDTH, DEFAULT_FRAME_WIDTH),
+			intParam(parameters, PARAM_FRAME_HEIGHT, DEFAULT_FRAME_HEIGHT));
+	capture.set(CV_CAP_PROP_FRAME_WIDTH, frameSize.width);
+	capture.set(CV_CAP_PROP_FRAME_HEIGHT, frameSize.height);
 
 	// Read command line parameters
 	int frameTime = intParam(parameters, PARAM_FRAME_TIME, DEFAULT_FRAME_TIME);
@@ -130,13 +132,11 @@ void process(std::unordered_map<std::string, std::string> &parameters) {
 	if (showContrastWindow) {
 		namedWindow("contrast", CV_WINDOW_AUTOSIZE | CV_WINDOW_KEEPRATIO | CV_GUI_EXPANDED);
 	}
-	Size actualFrameSize((int) capture.get(CV_CAP_PROP_FRAME_WIDTH),
-			(int) capture.get(CV_CAP_PROP_FRAME_HEIGHT));
-	Size trackedFrameSize(makeQuadratic ? actualFrameSize.height : actualFrameSize.width,
-			actualFrameSize.height);
+	Size trackedFrameSize(makeQuadratic ? frameSize.height : frameSize.width,
+			frameSize.height);
 	CameraDisplay *cameraDisplay = NULL;
 	if (showInputWindow) {
-		cameraDisplay = new CameraDisplay(parameters, actualFrameSize);
+		cameraDisplay = new CameraDisplay(parameters, frameSize);
 	}
 	FiducialFinder fiducialFinder(trackedFrameSize);
 	TuioServer tuioServer(parameters);

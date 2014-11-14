@@ -134,8 +134,7 @@
 								</option>
 								<option id="gnu.cpp.link.option.libs.2036294852" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="wosclib"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="libfidtrack"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="cv2"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="fidtrack"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="opencv_core"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="opencv_highgui"/>
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="opencv_imgproc"/>

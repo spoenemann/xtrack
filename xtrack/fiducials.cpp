@@ -46,6 +46,9 @@ FiducialFinder::FiducialFinder(cv::Size &fsize) {
 }
 
 FiducialFinder::~FiducialFinder() {
+	terminate_segmenter(&segmenter);
+	terminate_fidtrackerX(&fidtrackerx);
+	terminate_treeidmap(&treeidmap);
 	delete dmap;
 }
 
