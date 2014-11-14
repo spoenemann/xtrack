@@ -171,7 +171,7 @@ WOscTimeTag
 WOscTimeTag::GetLargestTimeTag()
 {
 	WOscTimeTag retTag;
-	retTag.m_timeTag = _UI64_MAX;
+	retTag.m_timeTag = ULONG_MAX; // _UI64_MAX
 	return retTag;
 }
 

@@ -3,6 +3,8 @@
 	<name>xtrack-mac</name>
 	<comment></comment>
 	<projects>
+		<project>libfidtrack</project>
+		<project>wosclib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
